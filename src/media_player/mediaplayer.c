@@ -898,7 +898,11 @@ int mp_stream_open(MediaState_t* ms, int stream_index)
 
 					if (ret >= 0)
 					{
+					#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(58,0,0)
 					    if ((ms->format->iformat->flags & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH | AVFMT_NO_BYTE_SEEK)) && !ms->format->iformat->read_seek)
+					#else
+					    if ((ms->format->iformat->flags & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH | AVFMT_NO_BYTE_SEEK)) && !ms->format->iformat->flags & AVFMT_SEEK_TO_PTS)
+					#endif
 					    {
 						ms->auddec.start_pts    = ms->audst->start_time;
 						ms->auddec.start_pts_tb = ms->audst->time_base;
